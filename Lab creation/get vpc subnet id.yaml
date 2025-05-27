@@ -1,6 +1,7 @@
 ---
-- name: Get subnet id by VPC name
+- name: Get subnet ID by VPC name
   hosts: localhost
+  gather_facts: no
   vars:
     aws_region: us-east-2
     vpc_name: myCompanyVPCname
@@ -12,6 +13,18 @@
         filters:
           "tag:Name": "{{ vpc_name }}"
       register: vpc_info
+
+    - name: Fail if no VPC found
+      fail:
+        msg: "No VPC found with name '{{ vpc_name }}'"
+      when: vpc_info.vpcs | length == 0
+
+    - name: Get subnet info by VPC ID
+      amazon.aws.ec2_vpc_subnet_info:
+        region: "{{ aws_region }}"
+        filters:
+          vpc-id: "{{ vpc_info.vpcs[0].id }}"
+      register: subnet_info
 
     - name: Show Subnet ID if found
       debug:
