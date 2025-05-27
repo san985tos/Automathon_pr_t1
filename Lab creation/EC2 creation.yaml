@@ -1,17 +1,17 @@
 ---
-- name: Play to create EC2 resources and finally a RHEL 8 instance.
+- name: Play to create EC2 resources and finally a RHEL 10 instance.
   hosts: localhost
   gather_facts: no
   vars:
     aws_region: us-east-2
     vpc_name: VPCname
     aws_instance_type: t2.micro
-    aws_instance_ami_id: ami-0ba62214afa52bec7
-    aws_instance_name: RHEL10
+    aws_instance_ami_id: ami-0a482bdfdf4a33e61
+    aws_instance_name: RHEL9
     aws_key_pair_name: ocpkey  
     number_of_instances: 1
 
-    # RHEL 10 ami-0fe07c1aadd2e4ac9
+    # RHEL 9 ami-0a482bdfdf4a33e61
     # Windows Server 2022 Base ami-0fd4271cf3adce206
 
   tasks:
