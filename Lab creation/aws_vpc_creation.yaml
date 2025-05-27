@@ -1,5 +1,5 @@
 ---
-- name: Create VPC
+- name: Play to create EC2 resources and finally a RHEL 8 instance.
   hosts: localhost
   vars:
     aws_region: us-east-2
@@ -9,7 +9,7 @@
   tasks:
     - name: "1 - Task to create {{ aws_client_name }} VPC"
       amazon.aws.ec2_vpc_net:
-        name: {{ aws_client_name }}
+        name: "{{ aws_client_name }}"
         cidr_block: 10.10.0.0/16
         region: "{{ aws_region }}"
         tenancy: default
