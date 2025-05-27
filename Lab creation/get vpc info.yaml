@@ -3,7 +3,6 @@
   hosts: localhost
   vars:
     aws_region: us-east-2
-    aws_client_name: myCompany
     vpc_name: myCompanyVPCname
 
   tasks:
