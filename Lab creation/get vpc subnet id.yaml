@@ -14,11 +14,6 @@
           "tag:Name": "{{ vpc_name }}"
       register: vpc_info
 
-    - name: Fail if no VPC found
-      fail:
-        msg: "No VPC found with name '{{ vpc_name }}'"
-      when: vpc_info.vpcs | length == 0
-
     - name: Get subnet info by VPC ID
       amazon.aws.ec2_vpc_subnet_info:
         region: "{{ aws_region }}"
