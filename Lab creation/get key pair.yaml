@@ -4,7 +4,7 @@
   vars:
     aws_region: us-east-2
     vpc_name: automathon_pr_t1
-    key-name: demo
+    key_name: demo
 
   tasks:
     - name: Get VPC info by Name tag
@@ -25,7 +25,7 @@
       amazon.aws.ec2_key_info:
         region: "{{ aws_region }}"
         filters:
-          key-name: "demo"
+          key_name: "demo"
       register: key_info
 
     - name: Show Key Pair name and fingerprint
