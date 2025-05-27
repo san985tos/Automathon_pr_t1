@@ -1,5 +1,5 @@
 ---
-- name: Play to create EC2 resources and finally a RHEL 8 instance.
+- name: Get VPC id by VPC name
   hosts: localhost
   vars:
     aws_region: us-east-2
