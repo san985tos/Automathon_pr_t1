@@ -25,7 +25,7 @@
       amazon.aws.ec2_key_info:
         region: "{{ aws_region }}"
         filters:
-          key_name: "demo"
+          key-name: "{{ key_name }}"
       register: key_info
 
     - name: Show Key Pair name and fingerprint
