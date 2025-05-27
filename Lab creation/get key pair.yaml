@@ -30,7 +30,7 @@
 
     - name: Show Key Pair name and fingerprint
       debug:
-        mgs: "{{ key_info }}"
+        msg: "{{ key_info }}"
 
     - name: Show Subnet ID if found
       debug:
