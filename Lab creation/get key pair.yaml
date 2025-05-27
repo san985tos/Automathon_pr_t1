@@ -30,9 +30,7 @@
 
     - name: Show Key Pair name and fingerprint
       debug:
-        msg: >
-          Key name: {{ key_info.key_pairs[0].key_name }},
-          Fingerprint: {{ key_info.key_pairs[0].key_fingerprint }}
+        key_info
 
     - name: Show Subnet ID if found
       debug:
