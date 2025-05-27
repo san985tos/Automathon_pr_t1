@@ -1,0 +1,59 @@
+---
+- name: Create VPC
+  hosts: localhost
+  vars:
+    aws_region: us-east-2
+    aws_key_pair_name: ocpkey
+    aws_client_name: myCompany
+
+  tasks:
+    - name: "1 - Task to create {{ aws_client_name }} VPC"
+      amazon.aws.ec2_vpc_net:
+        name: aws_client_name
+        cidr_block: 10.10.0.0/16
+        region: "{{ aws_region }}"
+        tenancy: default
+      register: aws_client_name
+
+    - name: "2 - Create an Internet Gateway and associate to the {{ aws_client_name }} VPC"
+      amazon.aws.ec2_vpc_igw:
+        vpc_id: "{{ aws_client_name.vpc.id }}"
+        region: "{{ aws_region }}"
+        state: present
+      register: ansible_tower_igw
+
+    - name: "3 - Create a subnet in the {{ aws_client_name }} VPC"
+      amazon.aws.ec2_vpc_subnet:
+        state: present
+        vpc_id: "{{ aws_client_name.vpc.id }}"
+        cidr: 10.10.0.0/20
+        region: "{{ aws_region }}"
+      register: ansible_tower_subnet
+
+    - name: "4 - Set up public {{ aws_client_name }} subnet route table"
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ aws_client_name.vpc.id }}"
+        region: "{{ aws_region }}"
+        subnets:
+          - "{{ ansible_tower_subnet.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ ansible_tower_igw.gateway_id }}"
+
+    - name: "5 - Task to create AWS security groups for {{ aws_client_name }}"
+      amazon.aws.ec2_group:
+        name: ansible_tower_sg
+        description: AWS security group for Ansible Tower demostration
+        vpc_id: "{{ aws_client_name.vpc.id }}"
+        region: "{{ aws_region }}"
+        rules:
+          - proto: tcp
+            ports:
+              - 22
+              - 80
+              - 8080
+              - 443
+              - 3389
+              - 5986
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all connections on port 22
