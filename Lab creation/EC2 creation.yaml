@@ -45,7 +45,7 @@
         key_name: "{{ aws_key_pair_name }}"
         network:
           assign_public_ip: yes
-          subnet_id: "subnet-0302c8789629f6ac3"
+        vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
         tags:
           Name: "RHEL10-{{ inventory_hostname }}"
           Type: Linux
