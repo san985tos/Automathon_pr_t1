@@ -9,15 +9,15 @@
   tasks:
     - name: "1 - Task to create {{ aws_client_name }} VPC"
       amazon.aws.ec2_vpc_net:
-        name: "{{ aws_client_name }}"
+        name: ansible_tower_vpc
         cidr_block: 10.10.0.0/16
         region: "{{ aws_region }}"
         tenancy: default
-      register: aws_client_name
+      register: ansible_tower_vpc
 
     - name: "2 - Create an Internet Gateway and associate to the {{ aws_client_name }} VPC"
       amazon.aws.ec2_vpc_igw:
-        vpc_id: "{{ aws_client_name.vpc.id }}"
+        vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
         region: "{{ aws_region }}"
         state: present
       register: ansible_tower_igw
@@ -25,14 +25,14 @@
     - name: "3 - Create a subnet in the {{ aws_client_name }} VPC"
       amazon.aws.ec2_vpc_subnet:
         state: present
-        vpc_id: "{{ aws_client_name.vpc.id }}"
+        vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
         cidr: 10.10.0.0/20
         region: "{{ aws_region }}"
       register: ansible_tower_subnet
 
     - name: "4 - Set up public {{ aws_client_name }} subnet route table"
       amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ aws_client_name.vpc.id }}"
+        vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
         region: "{{ aws_region }}"
         subnets:
           - "{{ ansible_tower_subnet.subnet.id }}"
@@ -44,7 +44,7 @@
       amazon.aws.ec2_group:
         name: ansible_tower_sg
         description: AWS security group for Ansible Tower demostration
-        vpc_id: "{{ aws_client_name.vpc.id }}"
+        vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
         region: "{{ aws_region }}"
         rules:
           - proto: tcp
