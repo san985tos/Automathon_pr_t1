@@ -23,11 +23,6 @@
           "tag:Name": "{{ vpc_name }}"
       register: vpc_info
 
-    - name: Fail if VPC not found
-      fail:
-        msg: "No VPC found with name '{{ vpc_name }}'"
-      when: vpc_info.vpcs | length == 0
-
     - name: Get subnet info by VPC ID
       amazon.aws.ec2_vpc_subnet_info:
         region: "{{ aws_region }}"
@@ -35,14 +30,10 @@
           vpc-id: "{{ vpc_info.vpcs[0].id }}"
       register: subnet_info
 
-    - name: Fail if no subnets found
-      fail:
-        msg: "No subnets found in VPC '{{ vpc_name }}'"
-      when: subnet_info.subnets | length == 0
-
     - name: Show first Subnet ID found
       debug:
         msg: "Subnet ID is {{ subnet_info.subnets[0].id }}"
+      register: my_subnet_id
 
     - name: Provision EC2 selected instance
       amazon.aws.ec2_instance:
@@ -54,7 +45,7 @@
         key_name: "{{ aws_key_pair_name }}"
         network:
           assign_public_ip: yes
-          subnet_id: "{{ subnet_info.subnets[0].id }}"
+          subnet_id: "{{ my_subnet_id }}"
         tags:
           Name: "RHEL10-{{ inventory_hostname }}"
           Type: Linux
