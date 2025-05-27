@@ -48,6 +48,6 @@
           Type: Linux
       register: ec2_result
 
-    - name: Show instance public IP
+    - name: Inspect ec2_result content
       debug:
-        msg: "Instance launched. Public IP: {{ ec2_result.instances[0].public_ip_address }}"
+        var: ec2_result
