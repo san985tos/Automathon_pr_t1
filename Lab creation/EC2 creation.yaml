@@ -36,13 +36,14 @@
     - name: Provision EC2 instances
       amazon.aws.ec2_instance:
         instance_type: "{{ aws_instance_type }}"
+        key_name: "{{ aws_key_pair_name }}"
         image_id: "{{ aws_instance_ami_id }}"
         region: "{{ aws_region }}"
         count: "{{ number_of_instances }}"
+        security_group: "ansible_tower_sg"
         wait: yes
         network:
-          assign_public_ip: yes
-          key_name: "{{ aws_key_pair_name }}"
+          assign_public_ip: yes   
         vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
         tags:
           Name: "{{ aws_instance_name }}-{{ inventory_hostname }}"
