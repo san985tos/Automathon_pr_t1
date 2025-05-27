@@ -1,127 +1,65 @@
 ---
 - name: Play to create EC2 resources and finally a RHEL 8 instance.
   hosts: localhost
+  gather_facts: no
   vars:
     aws_region: us-east-2
+    vpc_name: VPCname
     aws_instance_type: t2.micro
-    aws_instance_rhel8_id: ami-0ba62214afa52bec7
-    aws_instance_windows2019_id: ami-094aa6728b151e05a
-    aws_instance_debian_id: ami-089fe97bc00bff7cc
-    aws_instance_ubuntu_id: ami-0fb653ca2d3203ac1
-    aws_key_pair_name: demo
-    aws_client_name: myCompany
+    aws_instance_ami_id: ami-0ba62214afa52bec7
+    aws_key_pair_name: ocpkey  
+    number_of_instances: 1
+
+    # RHEL 10 ami-0fe07c1aadd2e4ac9
+    # Windows Server 2022 Base ami-0fd4271cf3adce206
+
+
 
   tasks:
-    - name: "1 - Task to create {{ aws_client_name }} VPC"
-      amazon.aws.ec2_vpc_net:
-        name: ansible_tower_vpc
-        cidr_block: 10.10.0.0/16
+    - name: Get VPC info by Name tag
+      amazon.aws.ec2_vpc_net_info:
         region: "{{ aws_region }}"
-        tenancy: default
-      register: ansible_tower_vpc
+        filters:
+          "tag:Name": "{{ vpc_name }}"
+      register: vpc_info
 
-    - name: "2 - Create an Internet Gateway and associate to the {{ aws_client_name }} VPC"
-      amazon.aws.ec2_vpc_igw:
-        vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
+    - name: Fail if VPC not found
+      fail:
+        msg: "No VPC found with name '{{ vpc_name }}'"
+      when: vpc_info.vpcs | length == 0
+
+    - name: Get subnet info by VPC ID
+      amazon.aws.ec2_vpc_subnet_info:
         region: "{{ aws_region }}"
-        state: present
-      register: ansible_tower_igw
+        filters:
+          vpc-id: "{{ vpc_info.vpcs[0].id }}"
+      register: subnet_info
 
-    - name: "3 - Create a subnet in the {{ aws_client_name }} VPC"
-      amazon.aws.ec2_vpc_subnet:
-        state: present
-        vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
-        cidr: 10.10.0.0/20
+    - name: Fail if no subnets found
+      fail:
+        msg: "No subnets found in VPC '{{ vpc_name }}'"
+      when: subnet_info.subnets | length == 0
+
+    - name: Show first Subnet ID found
+      debug:
+        msg: "Subnet ID is {{ subnet_info.subnets[0].id }}"
+
+    - name: Provision EC2 selected instance
+      amazon.aws.ec2_instance:
+        instance_type: "{{ aws_instance_type }}"
+        image_id: "{{ aws_instance_ami_id }}"
         region: "{{ aws_region }}"
-      register: ansible_tower_subnet
+        count: "{{ number_of_instances }}"
+        wait: yes
+        key_name: "{{ aws_key_pair_name }}"
+        network:
+          assign_public_ip: yes
+          subnet_id: "{{ subnet_info.subnets[0].id }}"
+        tags:
+          Name: "RHEL10-{{ inventory_hostname }}"
+          Type: Linux
+      register: ec2_result
 
-    - name: "4 - Set up public {{ aws_client_name }} subnet route table"
-      amazon.aws.ec2_vpc_route_table:
-        vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
-        region: "{{ aws_region }}"
-        subnets:
-          - "{{ ansible_tower_subnet.subnet.id }}"
-        routes:
-          - dest: 0.0.0.0/0
-            gateway_id: "{{ ansible_tower_igw.gateway_id }}"
-
-    - name: "5 - Task to create AWS security groups for {{ aws_client_name }}"
-      amazon.aws.ec2_group:
-        name: ansible_tower_sg
-        description: AWS security group for Ansible Tower demostration
-        vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
-        region: "{{ aws_region }}"
-        rules:
-          - proto: tcp
-            ports:
-              - 22
-              - 80
-              - 8080
-              - 443
-              - 3389
-              - 5986
-            cidr_ip: 0.0.0.0/0
-            rule_desc: allow all connections on port 22
-
-
-    - name: Provisioning EC2
-      block:
-        - name: "6.1 - Provision RHEL8.4 nodes"
-          amazon.aws.ec2_instance:
-            instance_type: "{{ aws_instance_type }}"
-            image_id: "{{ aws_instance_rhel8_id }}"
-            region: "{{ aws_region }}"
-            count: "{{ number_of_rhels }}"
-            wait: yes
-            key_name: "{{ aws_key_pair_name }}"
-            network:
-              assign_public_ip: yes
-            vpc_subnet_id: "{{ ansible_tower_subnet.subnet.id }}"
-            tags:
-              Name: RHEL8
-              Type: Linux
-
-        - name: "6.2 - Provision Debian nodes"
-          amazon.aws.ec2_instance:
-            instance_type: "{{ aws_instance_type }}"
-            image_id: "{{ aws_instance_debian_id }}"
-            region: "{{ aws_region }}"
-            count: "{{ number_of_debians }}"
-            wait: yes
-            key_name: "{{ aws_key_pair_name }}"
-            network:
-              assign_public_ip: yes
-            vpc_subnet_id: "{{ ansible_tower_subnet.subnet.id }}"
-            tags:
-              Name: Debian
-              Type: Linux
-
-        - name: "6.3 - Provision Windows nodes"
-          amazon.aws.ec2_instance:
-            instance_type: "{{ aws_instance_type }}"
-            image_id: "{{ aws_instance_windows2019_id }}"
-            region: "{{ aws_region }}"
-            count: "{{ number_of_windows }}"
-            wait: yes
-            key_name: "{{ aws_key_pair_name }}"
-            network:
-              assign_public_ip: yes
-            vpc_subnet_id: "{{ ansible_tower_subnet.subnet.id }}"
-            tags:
-              Name: Windows2019
-              Type: Windows
-
-        - name: "6.4 - Provision Ubuntu nodes"
-          amazon.aws.ec2_instance:
-            instance_type: "{{ aws_instance_type }}"
-            image_id: "{{ aws_instance_ubuntu_id }}"
-            region: "{{ aws_region }}"
-            count: "{{ number_of_ubuntus }}"
-            wait: yes
-            key_name: "{{ aws_key_pair_name }}"
-            network:
-              assign_public_ip: yes
-            vpc_subnet_id: "{{ ansible_tower_subnet.subnet.id }}"
-            tags:
-              Name: Ubuntu
-              Type: Linux
+    - name: Show instance public IP
+      debug:
+        msg: "Instance launched. Public IP: {{ ec2_result.instances[0].public_ip_address }}"
