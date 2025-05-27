@@ -31,24 +31,23 @@
     - name: Show first Subnet ID found
       debug:
         msg: "Subnet ID is {{ subnet_info.subnets[0].id }}"
-      register: my_subnet_id
 
     - name: "6.1 - Provision RHEL8.4 nodes"
       amazon.aws.ec2_instance:
         instance_type: "{{ aws_instance_type }}"
         image_id: "{{ aws_instance_ami_id }}"
         region: "{{ aws_region }}"
-        count: "{{ number_of_rhels }}"
+        count: "{{ number_of_instances }}"
         wait: yes
         key_name: "{{ aws_key_pair_name }}"
         network:
           assign_public_ip: yes
-        vpc_subnet_id: "{{ ansible_tower_subnet.subnet.id }}"
+        vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
         tags:
           Name: RHEL8
           Type: Linux
       register: ec2_result
 
-    - name: Inspect ec2_result content
+    - name: Show instance public IP
       debug:
-        var: ec2_result
+        msg: "Instance launched. Public IP: {{ ec2_result.instances[0].public_ip_address }}"
