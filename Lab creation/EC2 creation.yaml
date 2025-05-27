@@ -8,7 +8,7 @@
     aws_instance_type: t2.micro
     aws_instance_ami_id: ami-0a482bdfdf4a33e61
     aws_instance_name: RHEL9
-    aws_key_pair_name: ocpkey  
+    aws_key_pair_name: demo  
     number_of_instances: 1
 
     # RHEL 9 ami-0a482bdfdf4a33e61
