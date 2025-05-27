@@ -1,1 +1,1 @@
-# test_automathon_pr_t1
+# Este es el repositorio oficial del equipo 1
