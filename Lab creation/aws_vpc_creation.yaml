@@ -13,6 +13,7 @@
         cidr_block: 10.10.0.0/16
         region: "{{ aws_region }}"
         tenancy: default
+      register: aws_client_name
 
     - name: "2 - Create an Internet Gateway and associate to the {{ aws_client_name }} VPC"
       amazon.aws.ec2_vpc_igw:
