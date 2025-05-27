@@ -13,8 +13,6 @@
     # RHEL 10 ami-0fe07c1aadd2e4ac9
     # Windows Server 2022 Base ami-0fd4271cf3adce206
 
-
-
   tasks:
     - name: Get VPC info by Name tag
       amazon.aws.ec2_vpc_net_info:
@@ -35,22 +33,22 @@
         msg: "Subnet ID is {{ subnet_info.subnets[0].id }}"
       register: my_subnet_id
 
-    - name: Provision EC2 selected instance
+    - name: "6.1 - Provision RHEL8.4 nodes"
       amazon.aws.ec2_instance:
         instance_type: "{{ aws_instance_type }}"
         image_id: "{{ aws_instance_ami_id }}"
         region: "{{ aws_region }}"
-        count: "{{ number_of_instances }}"
+        count: "{{ number_of_rhels }}"
         wait: yes
         key_name: "{{ aws_key_pair_name }}"
         network:
           assign_public_ip: yes
-        vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
+        vpc_subnet_id: "{{ ansible_tower_subnet.subnet.id }}"
         tags:
-          Name: "RHEL10-{{ inventory_hostname }}"
+          Name: RHEL8
           Type: Linux
       register: ec2_result
 
-    - name: Show instance public IP
+    - name: Inspect ec2_result content
       debug:
-        msg: "Instance launched. Public IP: {{ ec2_result.instances[0].public_ip_address }}"
+        var: ec2_result
