@@ -46,7 +46,7 @@
           assign_public_ip: yes   
         vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
         tags:
-          Name: "{{ aws_instance_name }}-{{ inventory_hostname }}"
+          # Name: "{{ aws_instance_name }}-{{ inventory_hostname }}"
           Type: RHEL
       register: ec2_result
 
