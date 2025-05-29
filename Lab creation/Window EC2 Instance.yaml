@@ -47,7 +47,13 @@
         vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
         user_data: |
           <powershell>
-          net user redhat "r3dh4t1!"
+          net user Administrator "MySecurePassword123!"
+          winrm quickconfig -force
+          winrm set winrm/config/service/auth '@{Basic="true"}'
+          winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+          Set-Item -Force WSMan:\localhost\Service\AllowUnencrypted $true
+          Set-Item -Force WSMan:\localhost\Service\Auth\Basic $true
+          Enable-PSRemoting -Force
           </powershell>
         tags:
           Name: "{{ aws_instance_name }}"
