@@ -1,10 +1,10 @@
 ---
-- name: Play to create EC2 resources and finally a RHEL 10 instance.
+- name: Create RHEL 9 EC2 instance.
   hosts: localhost
   gather_facts: no
   vars:
     aws_region: us-east-2
-    vpc_name: VPCname
+    vpc_name: team1
     aws_instance_type: t2.micro
     aws_instance_ami_id: ami-0a482bdfdf4a33e61
     aws_instance_name: RHEL9

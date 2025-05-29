@@ -3,8 +3,8 @@
   hosts: localhost
   vars:
     aws_region: us-east-2
-    aws_key_pair_name: ocpkey
-    aws_client_name: myCompany
+    aws_key_pair_name: demo
+    aws_client_name: team1
 
   tasks:
     - name: "1 - Task to create {{ aws_client_name }} VPC"
