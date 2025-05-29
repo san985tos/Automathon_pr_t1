@@ -1,6 +1,6 @@
 ---
 - name: This playbook checks the filesystem capacity of a RHEL operating system
-  hosts: rhel
+  hosts: all
   tasks:
     - name: Check filesystem capacity
       ansible.builtin.command: df -h
