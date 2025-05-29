@@ -7,7 +7,7 @@
     vpc_name: team1
     aws_instance_type: t2.micro
     aws_instance_ami_id: ami-0fd4271cf3adce206
-    #aws_instance_name: WindServer2022
+    aws_instance_name: "WinServer2022-{{ 99999 | random }}"
     aws_key_pair_name: demo  
     number_of_instances: 1
 
@@ -46,7 +46,7 @@
           assign_public_ip: yes   
         vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
         tags:
-          #Name: "{{ aws_instance_name }}-{{ inventory_hostname }}"
+          Name: "{{ aws_instance_name }}"
           Type: Windows
       register: ec2_result
 
