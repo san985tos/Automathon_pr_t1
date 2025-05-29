@@ -1,6 +1,7 @@
 ---
 - name: Verificar capacidad de los sistemas de archivos en RHEL
   hosts: all
+  gather_facts: no
   become: true
   tasks:
 
