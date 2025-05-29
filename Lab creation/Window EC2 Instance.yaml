@@ -45,6 +45,10 @@
         network:
           assign_public_ip: yes   
         vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
+        user_data: |
+          <powershell>
+          net user Administrator "MySecurePassword123!"
+          </powershell>
         tags:
           Name: "{{ aws_instance_name }}"
           Type: Windows
