@@ -1,10 +1,13 @@
 ---
-- name: This playbook checks the filesystem capacity of a RHEL operating system
-  hosts: all
+- name: Verificar capacidad de los sistemas de archivos en RHEL
+  hosts: rhel_servers
+  become: true
   tasks:
-    - name: Check filesystem capacity
-      ansible.builtin.command: df -h
-      register: filesystem_capacity
-    - name: Print filesystem capacity
-      ansible.builtin.debug:
-        msg: "{{ filesystem_capacity.stdout }}"
+
+    - name: Ejecutar comando df -h
+      command: df -h
+      register: filesystem_usage
+
+    - name: Mostrar el uso de los sistemas de archivos
+      debug:
+        var: filesystem_usage.stdout_lines
