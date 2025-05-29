@@ -47,7 +47,7 @@
         vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
         tags:
           Name: "{{ aws_instance_name }}-{{ inventory_hostname }}"
-          Type: Linux
+          Type: Windows
       register: ec2_result
 
     - name: Inspect ec2_result content

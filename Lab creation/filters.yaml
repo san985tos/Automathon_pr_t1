@@ -1,0 +1,5 @@
+filters:
+
+keyed_groups:
+  - prefix: tag
+    key: tags
