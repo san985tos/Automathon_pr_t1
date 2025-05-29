@@ -1,0 +1,15 @@
+---
+- name: Create WinServer 2022 EC2 instance.
+  hosts: localhost
+  gather_facts: no
+  vars:
+    aws_region: us-east-2
+    vpc_name: team1
+    aws_instance_type: t2.micro
+    aws_instance_ami_id: ami-0fd4271cf3adce206
+    aws_instance_name: WindServer2022
+    aws_key_pair_name: demo  
+    number_of_instances: 1
+
+    # RHEL 9 ami-0a482bdfdf4a33e61
+    # Windows Server 2022 Base ami-0fd4271cf3adce206
