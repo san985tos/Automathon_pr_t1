@@ -55,6 +55,24 @@
           Set-Item -Force WSMan:\localhost\Service\Auth\Basic $true
           Enable-PSRemoting -Force
           </powershell>
+
+          <powershell>
+          # Establecer contraseña del usuario Administrator (para pruebas, no para producción)
+          net user Administrator "MySecurePassword123!"
+
+          # Habilitar WinRM
+          winrm quickconfig -force
+          winrm set winrm/config/service/auth '@{Basic="true"}'
+          winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+          Set-Item -Force WSMan:\localhost\Service\AllowUnencrypted $true
+          Set-Item -Force WSMan:\localhost\Service\Auth\Basic $true
+          Enable-PSRemoting -Force
+
+          # Abrir puertos 5985 (HTTP) y 5986 (HTTPS) en el firewall de Windows
+          netsh advfirewall firewall add rule name="WinRM_HTTP" dir=in action=allow protocol=TCP localport=5985
+          netsh advfirewall firewall add rule name="WinRM_HTTPS" dir=in action=allow protocol=TCP localport=5986
+          </powershell>
+          
         tags:
           Name: "{{ aws_instance_name }}"
           Type: Windows
