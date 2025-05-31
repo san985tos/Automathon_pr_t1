@@ -3,7 +3,7 @@
   hosts: all
   sources:
     - ansible.eda.timer:
-        interval: 60   # 60 segundos = 1 minuto
+        interval: 61   # 60 segundos = 1 minuto
 
   rules:
     - name: Ejecutar job template periódicamente
