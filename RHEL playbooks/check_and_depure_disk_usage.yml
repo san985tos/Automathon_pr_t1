@@ -17,10 +17,16 @@
         msg: "Disk usage is normal: {{ disk_usage.stdout }}% on {{ inventory_hostname }}"
       when: disk_usage.stdout | int < 80
 
-    - name: Delete files /fill_test/file_*
-      file:
-        path: "{{ item }}"
-        state: absent
-      with_fileglob:
-        - /fill_test/file_*
+    - name: Find files matching /fill_test/file_* on remote host
+      find:
+        paths: /fill_test
+        patterns: "file_*"
+      register: files_to_delete
       when: disk_usage.stdout | int >= 80
+
+    - name: Delete files /fill_test/file_* on remote host
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ files_to_delete.files }}"
+      when: disk_usage.stdout | int >= 80 and files_to_delete.matched > 0
