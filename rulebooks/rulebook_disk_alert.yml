@@ -1,10 +1,11 @@
 ---
-- name: Detectar alerta de disco en logs
+- name: Detectar alerta de disco en logs con source file
   hosts: all
   sources:
-    - ansible.eda.watchdog:
+    - ansible.eda.file:
         path: /var/log/messages
         pattern: "ALERTA: El uso del disco en.*"
+        mode: tail      # lee nuevas líneas al final (modo "tail")
 
   rules:
     - name: Detectar mensaje de uso de disco alto
