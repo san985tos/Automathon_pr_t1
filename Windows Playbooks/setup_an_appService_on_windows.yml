@@ -11,7 +11,7 @@
     install_dir: C:\FlaskService
     nssm_dir: C:\nssm
     service_name: FlaskWebService
-    python_path: C:\Python312\python.exe
+    python_path: C:\Program Files\Python312\python.exe
     app_py_path: "{{ install_dir }}\\app.py"
 
   tasks:
