@@ -1,13 +1,13 @@
 ---
-- name: Detectar alerta de disco en event stream
+- name: Ejecutar tarea periódica cada 1 minuto
   hosts: all
   sources:
-    - ansible.eda.event_stream:
-        stream: "disk-alerts"
+    - ansible.eda.timer:
+        interval: 60   # 60 segundos = 1 minuto
 
   rules:
-    - name: Detectar mensaje de uso de disco alto
-      condition: event.message is search("ALERTA: El uso del disco en.*")
+    - name: Ejecutar job template periódicamente
+      condition: event is defined
       action:
         run_job_template:
           name: team1 check and depure RHEL disk
