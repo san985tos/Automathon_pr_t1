@@ -2,7 +2,7 @@
 - name: Detectar alerta de disco en logs con sabre1041.eda
   hosts: all
   sources:
-    - sabre1041.eda.watch_file:
+    - ansible.eda.file_watch:
         path: /var/log/messages
         pattern: "ALERTA: El uso del disco en.*"
 
