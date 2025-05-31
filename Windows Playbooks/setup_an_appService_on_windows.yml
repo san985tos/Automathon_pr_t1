@@ -11,7 +11,7 @@
     install_dir: C:\FlaskService
     nssm_dir: C:\nssm
     service_name: FlaskWebService
-    python_path: C:\Program Files\Python312\python.exe
+    python_path: 'C:\Program Files\Python312\python.exe'
     app_py_path: "{{ install_dir }}\\app.py"
 
   tasks:
@@ -35,7 +35,7 @@
     - name: Instalar Flask
       ansible.windows.win_command: "{{ python_path }} -m pip install flask"
       args:
-        creates: C:\Python312\Lib\site-packages\flask
+        creates: 'C:\Program Files\Python312\Lib\site-packages\flask'
 
     - name: Crear archivo app.py (escucha en puerto 8080)
       ansible.windows.win_copy:
