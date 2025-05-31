@@ -1,5 +1,5 @@
 ---
-- name: Configurar servicio web Flask en Windows con NSSM
+- name: Desplegar app Flask en Windows (sin servicio ni NSSM)
   hosts: all
   collections:
     - ansible.windows
@@ -7,17 +7,13 @@
 
   vars:
     python_installer_url: https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe
-    nssm_zip_url: https://nssm.cc/release/nssm-2.24.zip
     install_dir: C:\FlaskService
-    nssm_dir: C:\nssm
-    service_name: FlaskWebService
     python_path: 'C:\Program Files\Python312\python.exe'
     app_py_path: "{{ install_dir }}\\app.py"
-    nssm_exe_path: "{{ nssm_dir }}\\nssm-2.24\\win64\\nssm.exe"   # ruta corregida a nssm.exe después de extracción
 
   tasks:
 
-    - name: Crear carpeta de instalación
+    - name: Crear carpeta para la app
       ansible.windows.win_file:
         path: "{{ install_dir }}"
         state: directory
@@ -27,19 +23,19 @@
         url: "{{ python_installer_url }}"
         dest: "{{ install_dir }}\\python-installer.exe"
 
-    - name: Instalar Python
+    - name: Instalar Python (si no está instalado)
       ansible.windows.win_package:
         path: "{{ install_dir }}\\python-installer.exe"
         arguments: /quiet InstallAllUsers=1 PrependPath=1
         creates_path: "{{ python_path }}"
 
-    - name: Instalar Flask usando PowerShell con ruta con espacios
+    - name: Instalar Flask con pip
       ansible.windows.win_shell: |
         & "{{ python_path }}" -m pip install flask
       args:
         creates: 'C:\Program Files\Python312\Lib\site-packages\flask'
 
-    - name: Crear archivo app.py (escucha en puerto 8080)
+    - name: Crear script Flask app.py
       ansible.windows.win_copy:
         dest: "{{ app_py_path }}"
         content: |
@@ -48,36 +44,7 @@
 
           @app.route('/')
           def hello():
-              return "¡Hola desde Flask ejecutándose como servicio de Windows en el puerto 8080!"
+              return "¡Hola desde Flask desplegado con Ansible en Windows!"
 
           if __name__ == "__main__":
               app.run(host="0.0.0.0", port=8080)
-
-    - name: Descargar NSSM
-      ansible.windows.win_get_url:
-        url: "{{ nssm_zip_url }}"
-        dest: "{{ install_dir }}\\nssm.zip"
-
-    - name: Extraer NSSM con PowerShell
-      ansible.windows.win_shell: |
-        Expand-Archive -Path "{{ install_dir }}\\nssm.zip" -DestinationPath "{{ nssm_dir }}" -Force
-      args:
-        creates: "{{ nssm_dir }}\\nssm-2.24"
-
-    - name: Listar contenido de la carpeta NSSM (para debug)
-      ansible.windows.win_shell: dir "{{ nssm_dir }}"
-      register: nssm_dir_listing
-
-    - name: Mostrar listado de NSSM
-      debug:
-        var: nssm_dir_listing.stdout_lines
-
-    - name: Listar contenido de la carpeta NSSM nssm-2.24 (para debug)
-      ansible.windows.win_shell: dir "{{ nssm_dir }}\\nssm-2.24"
-      register: nssm_dir_listing_subfolder
-
-    - name: Mostrar listado de NSSM nssm-2.24
-      debug:
-        var: nssm_dir_listing_subfolder.stdout_lines
-
-    - name: Verifica
