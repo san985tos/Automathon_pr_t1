@@ -63,6 +63,12 @@
       args:
         creates: "{{ nssm_dir }}\\win64\\nssm.exe"
 
+    - name: Verificar si el servicio ya existe en registro
+      ansible.windows.win_registry:
+        path: "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\{{ service_name }}"
+        state: query
+      register: service_reg
+    
     - name: Crear servicio con NSSM
       ansible.windows.win_command:
         argv:
@@ -71,5 +77,4 @@
           - "{{ service_name }}"
           - "{{ python_path }}"
           - "{{ app_py_path }}"
-      args:
-        creates: "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\{{ service_name }}"
+      when: service_reg.failed
