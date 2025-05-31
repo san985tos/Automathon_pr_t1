@@ -4,7 +4,7 @@
   gather_facts: no
   tasks:
     - name: Get disk usage for root partition
-      command: df -h / | awk 'NR==2 {print $5}' | tr -d '%'
+      shell: df -h / | awk 'NR==2 {print $5}' | tr -d '%'
       register: disk_usage
 
     - name: Fail if disk usage > 80%
