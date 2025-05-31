@@ -1,0 +1,26 @@
+---
+- name: Check disk usage on hosts
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Get disk usage for root partition
+      shell: df -h / | awk 'NR==2 {print $5}' | tr -d '%'
+      register: disk_usage
+
+    - name: Fail if disk usage > 80%
+      fail:
+        msg: "⚠️ Disk usage critical: {{ disk_usage.stdout }}% on {{ inventory_hostname }}"
+      when: disk_usage.stdout | int >= 80
+
+    - name: Show disk usage info
+      debug:
+        msg: "Disk usage is normal: {{ disk_usage.stdout }}% on {{ inventory_hostname }}"
+      when: disk_usage.stdout | int < 80
+
+    - name: Delete files /fill_test/file_*
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_fileglob:
+        - /fill_test/file_*
+      when: disk_usage.stdout | int >= 80
