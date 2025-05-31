@@ -1,0 +1,14 @@
+---
+- name: Detectar alerta de disco en logs
+  hosts: all
+  sources:
+    - ansible.eda.watchdog:
+        path: /var/log/messages
+        pattern: "ALERTA: El uso del disco en.*"
+
+  rules:
+    - name: Detectar mensaje de uso de disco alto
+      condition: event is defined
+      action:
+        run_playbook:
+          name: check_and_depure_disk_usage.yml
