@@ -64,4 +64,12 @@
         creates: "{{ nssm_dir }}\\win64\\nssm.exe"
 
     - name: Crear servicio con NSSM
-      ansible.windows.win_command: >
+      ansible.windows.win_command:
+        argv:
+          - "{{ nssm_dir }}\\win64\\nssm.exe"
+          - install
+          - "{{ service_name }}"
+          - "{{ python_path }}"
+          - "{{ app_py_path }}"
+      args:
+        creates: "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\{{ service_name }}"
