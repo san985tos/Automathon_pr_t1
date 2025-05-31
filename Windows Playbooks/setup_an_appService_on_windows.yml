@@ -1,6 +1,8 @@
 ---
 - name: Configurar servicio web Flask en Windows con NSSM
   hosts: all
+  collections:
+    - ansible.windows
   become: false
   vars:
     python_installer_url: https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe
@@ -23,34 +25,4 @@
         url: "{{ python_installer_url }}"
         dest: "{{ install_dir }}\\python-installer.exe"
 
-    - name: Instalar Python
-      win_package:
-        path: "{{ install_dir }}\\python-installer.exe"
-        arguments: /quiet InstallAllUsers=1 PrependPath=1
-        creates_path: "{{ python_path }}"
-
-    - name: Instalar Flask
-      win_command: "{{ python_path }} -m pip install flask"
-      args:
-        creates: C:\Python312\Lib\site-packages\flask
-
-    - name: Crear archivo app.py (escucha en puerto 8080)
-      win_copy:
-        dest: "{{ app_py_path }}"
-        content: |
-          from flask import Flask
-          app = Flask(__name__)
-
-          @app.route('/')
-          def hello():
-              return "¡Hola desde Flask ejecutándose como servicio de Windows en el puerto 8080!"
-
-          if __name__ == "__main__":
-              app.run(host="0.0.0.0", port=8080)
-
-    - name: Descargar NSSM
-      win_get_url:
-        url: "{{ nssm_zip_url }}"
-        dest: "{{ install_dir }}\\nssm.zip"
-
-    - name: Extraer NSSM con PowerShell
+    - name:
