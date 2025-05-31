@@ -23,8 +23,8 @@ for i in $(seq 1 $TOTAL); do
     dd if=/dev/zero of="$FILE" bs=1G count=1
   fi
 
-  echo "Archivo $i creado. Esperando 10 segundos..."
-  sleep 10
+  echo "Archivo $i creado. Esperando 5 segundos..."
+  sleep 5
 done
 
 echo "Listo. Se crearon $TOTAL archivos de $SIZE en $DEST"
