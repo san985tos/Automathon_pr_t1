@@ -63,11 +63,49 @@
       args:
         creates: "{{ nssm_dir }}\\win64\\nssm.exe"
 
+    - name: Listar contenido de la carpeta NSSM win64 (para debug)
+      ansible.windows.win_shell: dir "{{ nssm_dir }}\\win64"
+      register: nssm_dir_listing
+
+    - name: Mostrar listado de NSSM win64
+      debug:
+        var: nssm_dir_listing.stdout_lines
+
+    - name: Verificar que nssm.exe exista
+      ansible.windows.win_stat:
+        path: "{{ nssm_dir }}\\win64\\nssm.exe"
+      register: nssm_exe_stat
+
+    - name: Verificar que python.exe exista
+      ansible.windows.win_stat:
+        path: "{{ python_path }}"
+      register: python_exe_stat
+
+    - name: Verificar que app.py exista
+      ansible.windows.win_stat:
+        path: "{{ app_py_path }}"
+      register: app_py_stat
+
+    - name: Fail si no existe nssm.exe
+      ansible.builtin.fail:
+        msg: "El archivo nssm.exe no fue encontrado en {{ nssm_dir }}\\win64\\nssm.exe"
+      when: not nssm_exe_stat.stat.exists
+
+    - name: Fail si no existe python.exe
+      ansible.builtin.fail:
+        msg: "El archivo python.exe no fue encontrado en {{ python_path }}"
+      when: not python_exe_stat.stat.exists
+
+    - name: Fail si no existe app.py
+      ansible.builtin.fail:
+        msg: "El archivo app.py no fue encontrado en {{ app_py_path }}"
+      when: not app_py_stat.stat.exists
+
     - name: Verificar si el servicio ya existe en registro
       ansible.windows.win_reg_stat:
         path: "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\{{ service_name }}"
       register: service_reg
-    
+
     - name: Crear servicio con NSSM
       ansible.windows.win_command:
         argv:
