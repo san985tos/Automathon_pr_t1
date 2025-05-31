@@ -51,14 +51,11 @@
               app.run(host="0.0.0.0", port=8080)
 
     - name: Crear tarea programada para iniciar Flask al iniciar sesión
-      ansible.windows.win_scheduled_task:
-        name: "{{ task_name }}"
-        description: "Iniciar app Flask automáticamente al inicio de sesión"
-        actions:
-          - path: "{{ python_path }}"
-            arguments: "{{ app_py_path }}"
-        triggers:
-          - type: logon
-        username: SYSTEM
-        state: present
-        run_level: highest
+      ansible.windows.win_shell: |
+        $action = New-ScheduledTaskAction -Execute '{{ python_path }}' -Argument '{{ app_py_path }}'
+        $trigger = New-ScheduledTaskTrigger -AtLogOn
+        $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -RunLevel Highest
+        $task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal
+        Register-ScheduledTask -TaskName '{{ task_name }}' -InputObject $task -Force
+      args:
+        executable: powershell.exe
