@@ -17,28 +17,28 @@
   tasks:
 
     - name: Crear carpeta de instalación
-      win_file:
+      ansible.windows.win_file:
         path: "{{ install_dir }}"
         state: directory
 
     - name: Descargar instalador de Python
-      win_get_url:
+      ansible.windows.win_get_url:
         url: "{{ python_installer_url }}"
         dest: "{{ install_dir }}\\python-installer.exe"
 
     - name: Instalar Python
-      win_package:
+      ansible.windows.win_package:
         path: "{{ install_dir }}\\python-installer.exe"
         arguments: /quiet InstallAllUsers=1 PrependPath=1
         creates_path: "{{ python_path }}"
 
     - name: Instalar Flask
-      win_command: "{{ python_path }} -m pip install flask"
+      ansible.windows.win_command: "{{ python_path }} -m pip install flask"
       args:
         creates: C:\Python312\Lib\site-packages\flask
 
     - name: Crear archivo app.py (escucha en puerto 8080)
-      win_copy:
+      ansible.windows.win_copy:
         dest: "{{ app_py_path }}"
         content: |
           from flask import Flask
@@ -52,7 +52,7 @@
               app.run(host="0.0.0.0", port=8080)
 
     - name: Descargar NSSM
-      win_get_url:
+      ansible.windows.win_get_url:
         url: "{{ nssm_zip_url }}"
         dest: "{{ install_dir }}\\nssm.zip"
 
@@ -63,23 +63,4 @@
         creates: "{{ nssm_dir }}\\win64\\nssm.exe"
 
     - name: Crear servicio con NSSM
-      win_command: >
-        {{ nssm_dir }}\win64\nssm.exe install {{ service_name }}
-        "{{ python_path }}"
-        "{{ app_py_path }}"
-      args:
-        creates: "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\{{ service_name }}"
-
-    - name: Permitir tráfico entrante por el puerto 8080
-      win_firewall_rule:
-        name: "Flask Puerto 8080"
-        localport: 8080
-        protocol: tcp
-        action: allow
-        direction: in
-        state: present
-
-    - name: Iniciar el servicio
-      win_service:
-        name: "{{ service_name }}"
-        state: s
+      ansible.windows.win_command: >
