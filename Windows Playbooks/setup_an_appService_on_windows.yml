@@ -32,8 +32,9 @@
         arguments: /quiet InstallAllUsers=1 PrependPath=1
         creates_path: "{{ python_path }}"
 
-    - name: Instalar Flask
-      ansible.windows.win_command: "{{ python_path }} -m pip install flask"
+    - name: Instalar Flask usando PowerShell con ruta con espacios
+      ansible.windows.win_shell: |
+        & "{{ python_path }}" -m pip install flask
       args:
         creates: 'C:\Program Files\Python312\Lib\site-packages\flask'
 
