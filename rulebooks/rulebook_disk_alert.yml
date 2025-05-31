@@ -1,12 +1,13 @@
 ---
-- name: Ejecutar tarea periódica cada 1 minuto
+- name: Detectar alerta de disco en logs con sabre1041.eda
   hosts: all
   sources:
-    - ansible.eda.timer:
-        interval: 61   # 60 segundos = 1 minuto
+    - sabre1041.eda.watch_file:
+        path: /var/log/messages
+        pattern: "ALERTA: El uso del disco en.*"
 
   rules:
-    - name: Ejecutar job template periódicamente
+    - name: Detectar mensaje de uso de disco alto
       condition: event is defined
       action:
         run_job_template:
