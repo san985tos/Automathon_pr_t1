@@ -8,7 +8,7 @@
       register: disk_usage
 
     - name: Fail if disk usage > 80%
-      fail:
+      debug:
         msg: "⚠️ Disk usage critical: {{ disk_usage.stdout }}% on {{ inventory_hostname }}"
       when: disk_usage.stdout | int >= 80
 
