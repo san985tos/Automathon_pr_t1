@@ -1,6 +1,6 @@
 ---
 - name: Desplegar monitor de espacio en disco con cron
-  hosts: RHEL  # cambia por tu inventario o grupo
+  hosts: all  # cambia por tu inventario o grupo
   become: true       # para ejecutar tareas como root
 
   tasks:
