@@ -5,6 +5,7 @@
     - ansible.eda.file_watch:
         path: /var/log/messages
         pattern: "ALERTA: El uso del disco en.*"
+        recursive: false
 
   rules:
     - name: Detectar mensaje de uso de disco alto
