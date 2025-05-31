@@ -10,5 +10,6 @@
     - name: Detectar mensaje de uso de disco alto
       condition: event is defined
       action:
-        run_playbook:
-          name: check_and_depure_disk_usage.yml
+        run_job_template:
+          name: team1 check and depure RHEL disk
+          organization: Default
