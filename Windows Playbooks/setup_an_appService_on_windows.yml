@@ -53,21 +53,4 @@
         url: "{{ nssm_zip_url }}"
         dest: "{{ install_dir }}\\nssm.zip"
 
-    - name: Extraer NSSM
-      win_unzip:
-        src: "{{ install_dir }}\\nssm.zip"
-        dest: "{{ nssm_dir }}"
-        creates: "{{ nssm_dir }}\\win64\\nssm.exe"
-
-    - name: Crear servicio con NSSM
-      win_command: >
-        {{ nssm_dir }}\win64\nssm.exe install {{ service_name }}
-        "{{ python_path }}"
-        "{{ app_py_path }}"
-      args:
-        creates: "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\{{ service_name }}"
-
-    - name: Iniciar el servicio
-      win_service:
-        name: "{{ service_name }}"
-        state: started
+    - name: Extraer NSSM con PowerShell
