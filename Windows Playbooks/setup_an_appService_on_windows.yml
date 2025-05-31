@@ -1,5 +1,5 @@
 ---
-- name: Desplegar app Flask en Windows (sin servicio ni NSSM)
+- name: Desplegar app Flask en Windows con inicio automático vía tarea programada
   hosts: all
   collections:
     - ansible.windows
@@ -10,6 +10,7 @@
     install_dir: C:\FlaskService
     python_path: 'C:\Program Files\Python312\python.exe'
     app_py_path: "{{ install_dir }}\\app.py"
+    task_name: FlaskAppAutoStart
 
   tasks:
 
@@ -48,3 +49,16 @@
 
           if __name__ == "__main__":
               app.run(host="0.0.0.0", port=8080)
+
+    - name: Crear tarea programada para iniciar Flask al iniciar sesión
+      ansible.windows.win_scheduled_task:
+        name: "{{ task_name }}"
+        description: "Iniciar app Flask automáticamente al inicio de sesión"
+        actions:
+          - path: "{{ python_path }}"
+            arguments: "{{ app_py_path }}"
+        triggers:
+          - type: logon
+        username: SYSTEM
+        state: present
+        run_level: highest
