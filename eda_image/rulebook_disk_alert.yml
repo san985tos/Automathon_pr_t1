@@ -1,0 +1,16 @@
+---
+- name: Detectar alerta de disco en logs
+  hosts: all
+  sources:
+    - ansible.eda.file_watch:
+        path: /var/log/messages
+        pattern: "ALERTA: El uso del disco en.*"
+        recursive: false
+
+  rules:
+    - name: Detectar mensaje de uso de disco alto
+      condition: events.line is defined and events.line is search("ALERTA")
+      action:
+        run_job_template:
+          name: team1 check and depure RHEL disk
+          organization: Default
