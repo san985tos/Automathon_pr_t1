@@ -3,14 +3,16 @@ FROM quay.io/ansible/ansible-rulebook:latest
 
 USER 1001
 
-ENV EDA_HOME=/opt/app-root/src
-ENV ANSIBLE_COLLECTIONS_PATH=/opt/app-root/src/collections
+ENV EDA_HOME=/app/src
+ENV ANSIBLE_COLLECTIONS_PATH=/app/src/collections
 
-RUN chmod -R 755  ${EDA_HOME}
 
 RUN mkdir -p ${ANSIBLE_COLLECTIONS_PATH}
 
-COPY requirements.yml /app/eda/src/requirements.yml
+RUN chmod -R 755  ${EDA_HOME}
+
+
+COPY requirements.yml /app/src/requirements.yml
 
 RUN ansible-galaxy collection install \
       -r ${EDA_HOME}/requirements.yml \
