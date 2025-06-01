@@ -1,15 +1,14 @@
 ---
-- name: Monitor disk usage alerts in messages
+- name: Detectar alerta de disco en logs
   hosts: all
   sources:
     - ansible.eda.webhook:
         host: 0.0.0.0
-        port: 5050
+        port: 8666
   rules:
-    - name: Detect high disk usage messages
-      condition: event.message is search('ALERTA: El uso del disco en.*')
+    - name: Detectar mensaje de uso de disco alto
+      condition: event.payload.disk_usage is defined and event.payload.disk_usage >= 80
       action:
-        controller_job:
+        run_job_template:
           name: T1_RHEL_5__Check_and_depure_RHEL_disk
           organization: Default
-
