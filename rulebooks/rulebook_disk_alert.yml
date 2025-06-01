@@ -5,10 +5,9 @@
     - ansible.eda.webhook:
         host: 0.0.0.0
         port: 8666
-
   rules:
     - name: Detectar mensaje de uso de disco alto
-      condition: event.payload.disk_usage >= 80
+      condition: event.payload.disk_usage is defined and event.payload.disk_usage >= 80
       action:
         run_job_template:
           name: T1_RHEL_5__Check_and_depure_RHEL_disk
