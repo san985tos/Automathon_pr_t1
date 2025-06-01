@@ -12,5 +12,5 @@
       condition: events.line is defined and events.line is search("ALERTA")
       action:
         run_job_template:
-          name: team1 check and depure RHEL disk
+          name: T1_RHEL_5__Check_and_depure_RHEL_disk
           organization: Default
