@@ -17,7 +17,7 @@ COPY requirements.yml /app/eda/src/requirements.yml
 
 COPY rulebook_disk_alert.yml /app/eda/src/rulebooks/
 
+COPY messages /var/log/messages 
+
 RUN ansible-galaxy collection install -r /app/eda/src/requirements.yml --collections-path /app/eda/src/.ansible/collections
-
-
 
