@@ -1,16 +1,14 @@
 # Esta es la imagen que necesitamos
-FROM quay.io/ansible/ansible-rulebook:latest
+FROM quay.io/ansible/event-driven:latest
 
 USER 1001
 
 ENV EDA_HOME=/app/src
 ENV ANSIBLE_COLLECTIONS_PATH=/app/src/collections
 
-
 RUN mkdir -p ${ANSIBLE_COLLECTIONS_PATH}
 
 RUN chmod -R 755  ${EDA_HOME}
-
 
 COPY requirements.yml /app/src/requirements.yml
 
