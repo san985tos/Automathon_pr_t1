@@ -27,6 +27,6 @@
     - name: Agregar cron job para ejecutar el script cada 5 minutos
       cron:
         name: "Monitorear espacio en disco"
-        minute: "*/5"
+        minute: "*/1"
         job: "/root/check_disk.sh"
         user: root
