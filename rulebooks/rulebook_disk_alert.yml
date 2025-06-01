@@ -2,8 +2,9 @@
 - name: Monitor disk usage alerts in messages
   hosts: all
   sources:
-    - ansible.eda.file:
-        path: /var/log/messages
+    - ansible.eda.webhook:
+        host: 0.0.0.0
+        port: 5050
   rules:
     - name: Detect high disk usage messages
       condition: event.message is search('ALERTA: El uso del disco en.*')
