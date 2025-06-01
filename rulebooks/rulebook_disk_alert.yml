@@ -8,7 +8,7 @@
 
   rules:
     - name: Detectar mensaje de uso de disco alto
-      condition: events.line is defined and events.line is search("ALERTA")
+      condition: event.payload.disk_usage >= 80
       action:
         run_job_template:
           name: T1_RHEL_5__Check_and_depure_RHEL_disk
