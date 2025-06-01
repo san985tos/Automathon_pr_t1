@@ -1,5 +1,5 @@
 # Esta es la imagen que necesitamos
-FROM quay.io/ansible/event-driven:latest
+FROM quay.io/ansible/ansible-rulebook:latest
 
 USER 1001
 
