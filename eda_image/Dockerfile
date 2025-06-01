@@ -6,9 +6,9 @@ USER 1001
 ENV EDA_HOME=/opt/app-root/src
 ENV ANSIBLE_COLLECTIONS_PATH=/opt/app-root/src/collections
 
-RUN mkdir -p ${ANSIBLE_COLLECTIONS_PATH}
-
 RUN chmod -R 755  ${EDA_HOME}
+
+RUN mkdir -p ${ANSIBLE_COLLECTIONS_PATH}
 
 COPY requirements.yml /app/eda/src/requirements.yml
 
