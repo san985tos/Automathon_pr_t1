@@ -21,7 +21,7 @@
           fi
           curl -X POST https://disk-validation-aap.apps.cluster-7d5jn.7d5jn.sandbox1789.opentlc.com/ \                                          ─╯
           -H "Content-Type: application/json" \
-          -d '{"disk_usage": $USAGE}'
+          -d '{"disk_usage": "$USAGE"}'
         mode: '0755'
 
     - name: Agregar cron job para ejecutar el script cada 5 minutos
