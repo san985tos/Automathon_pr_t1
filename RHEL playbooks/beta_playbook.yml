@@ -1,0 +1,36 @@
+---
+- name: Check disk usage on hosts
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Get disk usage for root partition
+      shell: df -h / | awk 'NR==2 {print $5}' | tr -d '%'
+      register: disk_usage
+
+    - name: Fail if disk usage > 80%
+      debug:
+        msg: "⚠️ Disk usage critical: {{ disk_usage.stdout }}% on {{ inventory_hostname }}"
+      when: disk_usage.stdout | int >= 80
+
+    - name: Show disk usage info
+      debug:
+        msg: "Disk usage is normal: {{ disk_usage.stdout }}% on {{ inventory_hostname }}"
+      when: disk_usage.stdout | int < 80
+
+    - name: Find files matching /fill_test/file_* older than 10 days
+      find:
+        paths: /fill_test
+        patterns: "file_*"
+        age: "10d"
+        age_stamp: mtime
+      register: files_to_delete
+      when: disk_usage.stdout | int >= 80
+
+    - name: Delete old files /fill_test/file_* on remote host
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ files_to_delete.files }}"
+      when: disk_usage.stdout | int >= 80 and files_to_delete.matched > 0
+      loop_control:
+        label: "{{ item.path | basename }}"
