@@ -1,6 +1,6 @@
 ---
 - name: Listar servicios en ejecución en Windows Server
-  hosts: windows
+  hosts: all
   gather_facts: no
 
   tasks:
