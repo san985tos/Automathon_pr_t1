@@ -1,0 +1,34 @@
+---
+- name: Verificar si el servicio está corriendo en Windows Server
+  hosts: all
+  gather_facts: no
+  vars:
+    servicio_win: Spooler  # Puedes cambiar este valor o usar -e servicio_win=OtroServicio
+
+  tasks:
+    - name: Obtener estado del servicio 
+      win_shell: |
+        $service = Get-Service -Name "{{ servicio_win }}"
+        $service.Status
+      register: service_status
+      ignore_errors: yes
+
+    - name: Verificar si el servicio existe
+      fail:
+        msg: "El servicio '{{ servicio_win }}' no se encontró."
+      when: service_status.failed
+
+    - name: Mostrar estado del servicio 
+      debug:
+        msg: "Estado actual de '{{ servicio_win }}': {{ service_status.stdout }}"
+
+    - name: Notificar si el servicio no está corriendo
+      debug:
+        msg: "El servicio '{{ servicio_win }}' no está corriendo, se procederá a reiniciarlo."
+      when: service_status.stdout.strip() != "Running"
+
+    - name: Reiniciar el servicio si no está corriendo
+      win_service:
+        name: "{{ servicio_win }}"
+        state: restarted
+      when: service_status.stdout.strip() != "Running"
