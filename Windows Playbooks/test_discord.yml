@@ -32,7 +32,7 @@
         body: >
           {
             "username": "Ansible Bot",
-            "content": "👋 Hola mundo desde Ansible!"
+            "content": "Estado actual de '{{ servicio_win }}': {{ service_status.stdout }}"
           }
         body_format: json
 
