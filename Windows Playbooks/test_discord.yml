@@ -23,18 +23,16 @@
       debug:
         msg: "Estado actual de '{{ servicio_win }}': {{ service_status.stdout }}"
 
-    - name: Enviar mensaje a Discord
-      uri:
-        url: "{{ discord_webhook_url }}"
-        method: POST
-        headers:
-          Content-Type: "application/json"
-        body: >
-          {
-            "username": "Ansible Bot",
-            "content": "Estado actual de '{{ servicio_win }}': {{ service_status.stdout }}"
-          }
-        body_format: json
+    - name: Enviar mensaje a Discord usando PowerShell
+      win_shell: |
+        $webhookUrl = "{{ discord_webhook_url }}"
+
+        $payload = @{
+            username = "PowerShell Bot"
+            content  = "👋 Hola mundo desde PowerShell!"
+        } | ConvertTo-Json -Depth 3
+
+        Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $payload -ContentType 'application/json'
 
 
     - name: Reiniciar el servicio si no está corriendo
