@@ -37,7 +37,8 @@
         body_format: json
       when: service_status.stdout.strip() != "Running"
       delegate_to: localhost
-      run_once: true   # Opcional, si quieres que solo una notificación se envíe aunque tengas varios hosts
+      run_once: true
+      connection: local  # 👈 ¡Clave para que funcione en localhost correctamente!
 
 
     - name: Reiniciar el servicio si no está corriendo
