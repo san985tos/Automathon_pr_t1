@@ -32,10 +32,13 @@
         body: >
           {
             "username": "Ansible Bot",
-            "content": "⚠️ El servicio **{{ servicio_win }}** no estaba corriendo en **{{ inventory_hostname }}."
+            "content": "⚠️ El servicio **{{ servicio_win }}** no estaba corriendo en **{{ inventory_hostname }}**. Se ha reiniciado automáticamente el {{ ansible_date_time.iso8601 }}."
           }
         body_format: json
       when: service_status.stdout.strip() != "Running"
+      delegate_to: localhost
+      run_once: true   # Opcional, si quieres que solo una notificación se envíe aunque tengas varios hosts
+
 
     - name: Reiniciar el servicio si no está corriendo
       win_service:
