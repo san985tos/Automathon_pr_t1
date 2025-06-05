@@ -13,20 +13,6 @@
       register: service_status
       ignore_errors: yes
 
-    - name: Verificar si el servicio existe
-      fail:
-        msg: "El servicio '{{ servicio_win }}' no se encontró."
-      when: service_status.failed
-
-    - name: Mostrar estado del servicio 
-      debug:
-        msg: "Estado actual de '{{ servicio_win }}': {{ service_status.stdout }}"
-
-    - name: Notificar si el servicio no está corriendo
-      debug:
-        msg: "El servicio '{{ servicio_win }}' no está corriendo, se procederá a reiniciarlo."
-      when: service_status.stdout.strip() != "Running"
-
     - name: Reiniciar el servicio si no está corriendo
       win_service:
         name: "{{ servicio_win }}"
