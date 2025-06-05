@@ -1,0 +1,14 @@
+---
+- name: Listar servicios en ejecución en Windows Server
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+    - name: Obtener servicios que están en ejecución
+      win_shell: |
+        Get-Service | Where-Object {$_.Status -eq 'Running'} | Select-Object Name, DisplayName, Status
+      register: running_services
+
+    - name: Mostrar servicios en ejecución
+      debug:
+        msg: "{{ running_services.stdout_lines }}"
