@@ -1,0 +1,17 @@
+# Define the service name
+$serviceName = "servicedesk"
+
+# Get the status of the service
+$service = Get-Service -Name $serviceName
+
+# Check if the service is stopped
+if ($service.Status -eq 'Stopped') {
+    # Define email parameters
+    $EmailFrom = "isphelpdeskservice@claropr.com"
+    $EmailTo = "noreply@claropr.com"
+    $Subject = "Service Alert: $serviceName has stopped"
+    $Body = "The service $serviceName has stopped on $(Get-Date)."
+
+    # Send the email
+    Send-MailMessage -From $EmailFrom -To $EmailTo -Subject $Subject -Body $Body -SmtpServer "IP Address"
+}
