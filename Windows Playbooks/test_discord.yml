@@ -29,7 +29,7 @@
 
         $payload = @{
             username = "PowerShell Bot"
-            content  = "👋 Hola mundo desde PowerShell!"
+            content  = "Estado actual de '{{ servicio_win }}': {{ service_status.stdout }}"
         } | ConvertTo-Json -Depth 3
 
         Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $payload -ContentType 'application/json'
