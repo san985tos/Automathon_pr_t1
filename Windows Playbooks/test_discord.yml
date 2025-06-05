@@ -23,7 +23,7 @@
       debug:
         msg: "Estado actual de '{{ servicio_win }}': {{ service_status.stdout }}"
 
-    - name: Notificar a Discord si el servicio no está corriendo
+    - name: Enviar mensaje a Discord
       uri:
         url: "{{ discord_webhook_url }}"
         method: POST
@@ -32,13 +32,9 @@
         body: >
           {
             "username": "Ansible Bot",
-            "content": "⚠️ El servicio **{{ servicio_win }}** no estaba corriendo en **{{ inventory_hostname }}**."
+            "content": "👋 Hola mundo desde Ansible!"
           }
         body_format: json
-      when: service_status.stdout.strip() != "Running"
-      delegate_to: localhost
-      run_once: true
-      connection: local  # 👈 ¡Clave para que funcione en localhost correctamente!
 
 
     - name: Reiniciar el servicio si no está corriendo
