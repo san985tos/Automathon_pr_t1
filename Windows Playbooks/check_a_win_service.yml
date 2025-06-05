@@ -1,0 +1,23 @@
+
+---
+- name: Verificar si el servicio mpssvc está corriendo en Windows Server
+  hosts: all
+  gather_facts: no
+  vars:
+    servicio_win: mpssvc
+
+  tasks:
+    - name: Obtener estado del servicio mpssvc
+      win_shell: |
+        $service = Get-Service -Name "{{ servicio_win }}"
+        $service.Status
+      register: mpssvc_status
+
+    - name: Mostrar estado del servicio mpssvc
+      debug:
+        msg: "Estado actual de '{{ servicio_win }}': {{ mpssvc_status.stdout }}"
+
+    - name: Falla si el servicio no está corriendo
+      fail:
+        msg: "El servicio 'mpssvc' no está corriendo."
+      when: mpssvc_status.stdout.strip() != "Running"
