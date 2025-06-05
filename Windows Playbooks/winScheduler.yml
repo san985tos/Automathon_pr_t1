@@ -1,6 +1,6 @@
 ---
 - name: Crear script en Windows Server 2022
-  hosts: windows
+  hosts: all
   gather_facts: no
   tasks:
     - name: Asegurarse de que el directorio C:\Scripts exista
