@@ -1,0 +1,44 @@
+---
+- name: Verificar un servicio en Windows y notificar a Discord si no está corriendo
+  hosts: all
+  gather_facts: no
+  vars:
+    servicio_win: Spooler  # Cambia el nombre del servicio si lo necesitas
+    discord_webhook_url: "https://discord.com/api/webhooks/1380184228662218914/3tsYzO_Pxp4ouPUjjq8qf1CiPuKZufoJFyIJBcJ84CRsISLP05T8S8RNFpVnlnnJl7J7 "  # Reemplaza con tu webhook real
+
+  tasks:
+    - name: Obtener estado del servicio
+      win_shell: |
+        $service = Get-Service -Name "{{ servicio_win }}"
+        $service.Status
+      register: service_status
+      ignore_errors: yes
+
+    - name: Validar si el servicio existe
+      fail:
+        msg: "El servicio '{{ servicio_win }}' no se encontró."
+      when: service_status.failed
+
+    - name: Mostrar estado actual del servicio
+      debug:
+        msg: "Estado actual de '{{ servicio_win }}': {{ service_status.stdout }}"
+
+    - name: Notificar a Discord si el servicio no está corriendo
+      uri:
+        url: "{{ discord_webhook_url }}"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+        body: >
+          {
+            "username": "Ansible Bot",
+            "content": "⚠️ El servicio **{{ servicio_win }}** no estaba corriendo en **{{ inventory_hostname }}**. Se ha reiniciado automáticamente el {{ ansible_date_time.iso8601 }}."
+          }
+        body_format: json
+      when: service_status.stdout.strip() != "Running"
+
+    - name: Reiniciar el servicio si no está corriendo
+      win_service:
+        name: "{{ servicio_win }}"
+        state: restarted
+      when: service_status.stdout.strip() != "Running"
