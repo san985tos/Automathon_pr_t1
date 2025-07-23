@@ -1,5 +1,5 @@
 ---
-- name: Create RHEL 9 EC2 instance.
+- name: Create RHEL 9 EC2 instances with unique names
   hosts: localhost
   gather_facts: no
   vars:
@@ -7,12 +7,8 @@
     vpc_name: team1
     aws_instance_type: t2.micro
     aws_instance_ami_id: ami-0a482bdfdf4a33e61
-    aws_instance_name: "RHEL9-{{ 99999 | random }}"
     aws_key_pair_name: demo  
     number_of_instances: 1
-
-    # RHEL 9 ami-0a482bdfdf4a33e61
-    # Windows Server 2022 Base ami-0fd4271cf3adce206
 
   tasks:
     - name: Get VPC info by Name tag
@@ -33,7 +29,7 @@
       debug:
         msg: "Subnet ID is {{ subnet_info.subnets[0].id }}"
 
-    - name: Provision EC2 instances (con nombres únicos)
+    - name: Provision EC2 instances with unique names
       amazon.aws.ec2_instance:
         instance_type: "{{ aws_instance_type }}"
         key_name: "{{ aws_key_pair_name }}"
@@ -45,11 +41,12 @@
           assign_public_ip: yes
         vpc_subnet_id: "{{ subnet_info.subnets[0].id }}"
         tags:
-          Name: "RHEL9-{{ 99999 | random }}"
+          Name: "RHEL9-{{ 99999 | random }}-{{ i }}"
           Type: RHEL
       loop: "{{ range(0, number_of_instances | int) | list }}"
       loop_control:
-        label: "Creating RHEL instance #{{ loop.index }}"
+        loop_var: i
+        label: "Creating RHEL instance #{{ i + 1 }}"
 
     - name: Inspect ec2_result content
       debug:
