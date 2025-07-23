@@ -47,7 +47,7 @@
         tags:
           Name: "RHEL9-{{ 99999 | random }}"
           Type: RHEL
-      loop: "{{ range(0, number_of_instances) | list }}"
+      loop: "{{ range(0, number_of_instances | int) | list }}"
       loop_control:
         label: "Creating RHEL instance #{{ loop.index }}"
 
